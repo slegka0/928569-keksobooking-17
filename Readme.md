@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дмитрий Беляев](https://up.htmlacademy.ru/javascript/17/user/928569).
-* Наставник: `Неизвестно`.
+* Наставник: [Юрий Катков](https://htmlacademy.ru/profile/id473867).
 
 ---
 
