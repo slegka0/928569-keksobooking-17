@@ -47,7 +47,7 @@ var generateAvatar = function (pictureName) {
  */
 var getRandomElement = function (arr) {
   return arr[getRandomNumber(0, arr.length - 1)];
-}
+};
 
 /**
  * Генерит координаты расположения хаты
