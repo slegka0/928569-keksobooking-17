@@ -2,23 +2,21 @@
 
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
-var MAP_WIDTH = 1150; // Изменил значение, чтобы за правый край пин не вылезал, правильное ли решение в данном случае? (раньше 1200 было)
-var MAP_START_X = 25; //  Аналогично, раньше здесь было 0
+var MAP_START_X = 0;
 var MAP_START_Y = 130;
 var MAP_END_Y = 630;
 var NUMBER_OF_LOCATION = 8;
 
-
 var avatars = ['user01', 'user02', 'user03', 'user04', 'user05', 'user06', 'user07', 'user08'];
 var map = document.querySelectorAll('.map');
+var mapEndX = map[0].clientWidth;
 var mapPinButton = document.querySelector('#pin').content.querySelector('.map__pin');
-var mapPins = document.querySelector('.map__pins');
-var offersType = ['palace', 'flat', 'house', 'bungalo'];
+var pinsContainer = document.querySelector('.map__pins');
+var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
 
 /**
  * Задает предварительные настройки
  */
-//  Не очень понял, что значит выносить предварительные настройки в функцию setup, надеюсь, что я не полную дичь сделал :D
 var setup = function () {
   map[0].classList.remove('map--faded');
 };
@@ -35,50 +33,49 @@ var getRandomNumber = function (min, max) {
 
 /**
  * Генерирует путь до картинки (аватара)
- * @param {number} number Индекс элемента массива, содержащего названия картинок (аватарок)
+ * @param {string} pictureName Название картинки
  * @return {string} Путь до картинки (аватара)
  */
-var createAvatar = function (number) {
-  return 'img/avatars/' + avatars[number] + '.png';
+var generateAvatar = function (pictureName) {
+  return 'img/avatars/' + pictureName + '.png';
 };
 
 /**
- * Выдает рандомный тип хаты из массива с типами хат
- * @return {string} Тип хаты
+ * Возвращает рандомный элемент указанного массива
+ * @param {*[]} arr Массив из которого берется рандомный элемент
+ * @return {*}
  */
-var createOffer = function () {
-  var currentIndex = Math.floor(getRandomNumber(0, 1) * offersType.length);
-  return offersType[currentIndex];
-};
+var getRandomElement = function (arr) {
+  return arr[getRandomNumber(0, arr.length - 1)];
+}
 
 /**
  * Генерит координаты расположения хаты
  * @return {{X: number, Y: number}} Координаты хаты: Х - по горизонтали, Y - по вертикали
  */
-var createLocation = function () {
+var generateLocation = function () {
   return {
-    X: getRandomNumber(MAP_START_X, MAP_WIDTH),
+    X: getRandomNumber(MAP_START_X + PIN_WIDTH / 2, mapEndX - PIN_WIDTH / 2),
     Y: getRandomNumber(MAP_START_Y, MAP_END_Y),
   };
 };
 
 /**
  * Создает объект, который будет описывать похожее объявление неподалёку (Кекс по соседству)
- * @param {number} i Индекс, участвующий в генерации пути до картинки (аватарки)
+ * @param {string} pictureName Название картинки (аватара)
  * @return {{offer: {type: string}, author: {avatar: string}, location: {X: number, Y: number}}}
  */
-var createObject = function (i) {
+var generateAd = function (pictureName) {
   return {
     author: {
-      avatar: createAvatar(i),
+      avatar: generateAvatar(pictureName),
     },
     offer: {
-      type: createOffer(),
+      type: getRandomElement(offersTypes),
     },
-    location: createLocation(),
+    location: generateLocation(),
   };
 };
-
 
 /**
  * Создает массив из объектов, которые будут описывать похожие объявления неподалёку (Кексы по соседству)
@@ -88,7 +85,8 @@ var createObject = function (i) {
 var addObjects = function (countOfObjects) {
   var myObjects = [];
   for (var i = 0; i < countOfObjects; i++) {
-    myObjects[i] = createObject(i);
+    var currentAvatar = avatars[i];
+    myObjects[i] = generateAd(currentAvatar);
   }
   return myObjects;
 };
@@ -98,30 +96,30 @@ var addObjects = function (countOfObjects) {
  * @param {object} somePin Объект, для которого создаётся метка
  * @return {Node}
  */
-var createOnePin = function (somePin) {
-  var Pin = mapPinButton.cloneNode(true);
-  var PinPositionX = somePin.location.X - PIN_WIDTH / 2 + 'px';
-  var PinPositionY = somePin.location.Y - PIN_HEIGHT + 'px';
-  var PinImg = somePin.author.avatar;
+var generatePin = function (somePin) {
+  var pin = mapPinButton.cloneNode(true);
+  var pinPositionX = somePin.location.X - PIN_WIDTH / 2 + 'px';
+  var pinPositionY = somePin.location.Y - PIN_HEIGHT + 'px';
+  var pinImg = somePin.author.avatar;
 
-  Pin.style.left = PinPositionX;
-  Pin.style.top = PinPositionY;
-  Pin.querySelector('img').src = PinImg;
-  Pin.querySelector('img').alt = 'Какой-то там заголовок объявления';
-  return Pin;
+  pin.style.left = pinPositionX;
+  pin.style.top = pinPositionY;
+  pin.querySelector('img').src = pinImg;
+  pin.querySelector('img').alt = 'Какой-то там заголовок объявления';
+  return pin;
 };
 
 /**
- * Отрисовывает эти несчастные метки на карте :D
- * @param {Array} pins Массив из объектов, которые нужно отрисовать
+ * Отрисовывает метки на карте
+ * @param {Object[]} pins Массив из объектов, которые нужно отрисовать
  */
-var createPins = function (pins) {
+var renderPins = function (pins) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pins.length; i++) {
-    fragment.appendChild(createOnePin(pins[i]));
+    fragment.appendChild(generatePin(pins[i]));
   }
-  mapPins.appendChild(fragment);
+  pinsContainer.appendChild(fragment);
 };
 
 setup();
-createPins(addObjects(NUMBER_OF_LOCATION));
+renderPins(addObjects(NUMBER_OF_LOCATION));
