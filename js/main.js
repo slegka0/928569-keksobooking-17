@@ -27,7 +27,7 @@ var setup = function () {
   activateFields(adFormInputs, 'deactivate');
   activateFields(adFormSelects, 'deactivate');
   findPinCoordinates('circle');
-}
+};
 
 /**
  * Переводит поля формы в указанное состояние (активное или неактивное)
@@ -58,7 +58,7 @@ var findPinCoordinates = function (mode) {
     mainPinY = mainPinY - PIN_HEIGHT;
   }
   addressInput.value = mainPinX + ',' + mainPinY;
-}
+};
 
 /**
  * Переводит страницу в активное состояние после первого щелчка на метку
