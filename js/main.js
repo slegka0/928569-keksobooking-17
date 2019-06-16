@@ -7,6 +7,12 @@ var MAP_START_Y = 130;
 var MAP_END_Y = 630;
 var NUMBER_OF_LOCATION = 8;
 
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var mapFilter = document.querySelector('.map__filters');
+var adFormInputs = adForm.querySelectorAll('input');
+var adFormSelects = adForm.querySelectorAll('select');
+var addressInput = adForm.querySelector('#address');
 var avatars = ['user01', 'user02', 'user03', 'user04', 'user05', 'user06', 'user07', 'user08'];
 var map = document.querySelectorAll('.map');
 var mapEndX = map[0].clientWidth;
@@ -18,7 +24,56 @@ var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
  * Задает предварительные настройки
  */
 var setup = function () {
-  map[0].classList.remove('map--faded');
+  activateFields(adFormInputs, 'deactivate');
+  activateFields(adFormSelects, 'deactivate');
+  findPinCoordinates('circle');
+}
+
+/**
+ * Переводит поля формы в указанное состояние (активное или неактивное)
+ * @param {node[]} arr Массив, содержащий поля формы
+ * @param {string} mode Указывает на текущий режим страницы, значение activate соответствует активному состоянию
+ */
+var activateFields = function (arr, mode) {
+  for (var i = 0; i < arr.length; i++) {
+    if (mode === 'activate') {
+      arr[i].disabled = false; // Тут подчеркивате disabled серым цветом и пишет, что данное свойство не подходит для типа node.
+    } else {
+      arr[i].disabled = true; // Как быть? Ведь у меня тут могут быть и HTMLInputElement, и HTMLSelectElement, в JSDoc как-то можно указать несколько типов для параметра?
+    }
+  }
+};
+
+/**
+ * Находит текущие координаты метки и заполняет их значениями поле адреса
+ * @param {string} mode Указывает на форму метки. Метка может быть круглой (в самом начале) или с острым концом снизу (shapeless)
+ */
+var findPinCoordinates = function (mode) {
+  var mainPinX = mainPin.style.left;
+  var mainPinY = mainPin.style.top;
+  mainPinX = Number(mainPinX.substr(0, mainPinX.length - 2));
+  mainPinY = Number(mainPinY.substr(0, mainPinY.length - 2));
+  if (mode === 'shapeless') {
+    mainPinX = mainPinX - PIN_WIDTH / 2;
+    mainPinY = mainPinY - PIN_HEIGHT;
+  }
+  addressInput.value = mainPinX + ',' + mainPinY;
+}
+
+/**
+ * Переводит страницу в активное состояние после первого щелчка на метку
+ */
+var onMainPinMouseUp = function () {
+  if (map[0].classList.contains('map--faded')) {
+    map[0].classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
+    mapFilter.classList.remove('map__filters--disabled');
+    activateFields(adFormInputs, 'activate');
+    activateFields(adFormSelects, 'activate');
+    renderPins(addObjects(NUMBER_OF_LOCATION));
+  } else {
+    findPinCoordinates('shapeless');
+  }
 };
 
 /**
@@ -121,5 +176,5 @@ var renderPins = function (pins) {
   pinsContainer.appendChild(fragment);
 };
 
+mainPin.addEventListener('mouseup', onMainPinMouseUp);
 setup();
-renderPins(addObjects(NUMBER_OF_LOCATION));
