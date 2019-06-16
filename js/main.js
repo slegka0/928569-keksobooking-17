@@ -10,8 +10,11 @@ var NUMBER_OF_LOCATION = 8;
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
 var mapFilter = document.querySelector('.map__filters');
-var adFormInputs = adForm.querySelectorAll('input');
-var adFormSelects = adForm.querySelectorAll('select');
+var adFormInputs = Array.from(adForm.querySelectorAll('input'));
+var adFormSelects = Array.from(adForm.querySelectorAll('select'));
+var adFormButtons = Array.from(adForm.querySelectorAll('button'));
+var adFormTextareas = Array.from(adForm.querySelectorAll('textarea'));
+var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas);
 var addressInput = adForm.querySelector('#address');
 var avatars = ['user01', 'user02', 'user03', 'user04', 'user05', 'user06', 'user07', 'user08'];
 var map = document.querySelectorAll('.map');
@@ -24,24 +27,28 @@ var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
  * Задает предварительные настройки
  */
 var setup = function () {
-  activateFields(adFormInputs, 'deactivate');
-  activateFields(adFormSelects, 'deactivate');
+  toggleActiveMode(adFormFields, true);
   findPinCoordinates('circle');
 };
 
 /**
  * Переводит поля формы в указанное состояние (активное или неактивное)
- * @param {node[]} arr Массив, содержащий поля формы
- * @param {string} mode Указывает на текущий режим страницы, значение activate соответствует активному состоянию
+ * @param {Array<HTMLButtonElement|HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>} formElements Массив, содержащий поля формы
+ * @param {boolean} disabled Текущее состояние (активное или неактивное)
  */
-var activateFields = function (arr, mode) {
-  for (var i = 0; i < arr.length; i++) {
-    if (mode === 'activate') {
-      arr[i].disabled = false; // Тут подчеркивате disabled серым цветом и пишет, что данное свойство не подходит для типа node.
-    } else {
-      arr[i].disabled = true; // Как быть? Ведь у меня тут могут быть и HTMLInputElement, и HTMLSelectElement, в JSDoc как-то можно указать несколько типов для параметра?
-    }
+var toggleActiveMode = function (formElements, disabled) {
+  for (var i = 0; i < formElements.length; i++) {
+    formElements[i].disabled = disabled ? true : false;
   }
+};
+
+/**
+ * Удаляет два последних символа строки и преобразует оставшуюся часть в число
+ * @param {string} someString Строка, над которой совершаются вышеперечисленные действия
+ * @return {number}
+ */
+var cutTwoLastSymbols = function (someString) {
+  return Number(someString.substr(0, someString.length - 2));
 };
 
 /**
@@ -51,8 +58,8 @@ var activateFields = function (arr, mode) {
 var findPinCoordinates = function (mode) {
   var mainPinX = mainPin.style.left;
   var mainPinY = mainPin.style.top;
-  mainPinX = Number(mainPinX.substr(0, mainPinX.length - 2));
-  mainPinY = Number(mainPinY.substr(0, mainPinY.length - 2));
+  mainPinX = cutTwoLastSymbols(mainPinX);
+  mainPinY = cutTwoLastSymbols(mainPinY);
   if (mode === 'shapeless') {
     mainPinX = mainPinX - PIN_WIDTH / 2;
     mainPinY = mainPinY - PIN_HEIGHT;
@@ -61,15 +68,14 @@ var findPinCoordinates = function (mode) {
 };
 
 /**
- * Переводит страницу в активное состояние после первого щелчка на метку
+ * Переводит страницу в активное состояние
  */
 var onMainPinMouseUp = function () {
   if (map[0].classList.contains('map--faded')) {
     map[0].classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     mapFilter.classList.remove('map__filters--disabled');
-    activateFields(adFormInputs, 'activate');
-    activateFields(adFormSelects, 'activate');
+    toggleActiveMode(adFormFields, false);
     renderPins(addObjects(NUMBER_OF_LOCATION));
   } else {
     findPinCoordinates('shapeless');
