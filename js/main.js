@@ -7,6 +7,15 @@ var MAP_START_Y = 130;
 var MAP_END_Y = 630;
 var NUMBER_OF_LOCATION = 8;
 
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var mapFilter = document.querySelector('.map__filters');
+var adFormInputs = Array.from(adForm.querySelectorAll('input'));
+var adFormSelects = Array.from(adForm.querySelectorAll('select'));
+var adFormButtons = Array.from(adForm.querySelectorAll('button'));
+var adFormTextareas = Array.from(adForm.querySelectorAll('textarea'));
+var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas);
+var addressInput = adForm.querySelector('#address');
 var avatars = ['user01', 'user02', 'user03', 'user04', 'user05', 'user06', 'user07', 'user08'];
 var map = document.querySelectorAll('.map');
 var mapEndX = map[0].clientWidth;
@@ -18,7 +27,59 @@ var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
  * Задает предварительные настройки
  */
 var setup = function () {
-  map[0].classList.remove('map--faded');
+  toggleActiveMode(adFormFields, true);
+  findPinCoordinates('circle');
+};
+
+/**
+ * Переводит поля формы в указанное состояние (активное или неактивное)
+ * @param {Array<HTMLButtonElement|HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>} formElements Массив, содержащий поля формы
+ * @param {boolean} disabled Текущее состояние (активное или неактивное)
+ */
+var toggleActiveMode = function (formElements, disabled) {
+  for (var i = 0; i < formElements.length; i++) {
+    formElements[i].disabled = disabled ? true : false;
+  }
+};
+
+/**
+ * Удаляет два последних символа строки и преобразует оставшуюся часть в число
+ * @param {string} someString Строка, над которой совершаются вышеперечисленные действия
+ * @return {number}
+ */
+var cutTwoLastSymbols = function (someString) {
+  return Number(someString.substr(0, someString.length - 2));
+};
+
+/**
+ * Находит текущие координаты метки и заполняет их значениями поле адреса
+ * @param {string} mode Указывает на форму метки. Метка может быть круглой (в самом начале) или с острым концом снизу (shapeless)
+ */
+var findPinCoordinates = function (mode) {
+  var mainPinX = mainPin.style.left;
+  var mainPinY = mainPin.style.top;
+  mainPinX = cutTwoLastSymbols(mainPinX);
+  mainPinY = cutTwoLastSymbols(mainPinY);
+  if (mode === 'shapeless') {
+    mainPinX = mainPinX - PIN_WIDTH / 2;
+    mainPinY = mainPinY - PIN_HEIGHT;
+  }
+  addressInput.value = mainPinX + ',' + mainPinY;
+};
+
+/**
+ * Переводит страницу в активное состояние
+ */
+var onMainPinMouseUp = function () {
+  if (map[0].classList.contains('map--faded')) {
+    map[0].classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
+    mapFilter.classList.remove('map__filters--disabled');
+    toggleActiveMode(adFormFields, false);
+    renderPins(addObjects(NUMBER_OF_LOCATION));
+  } else {
+    findPinCoordinates('shapeless');
+  }
 };
 
 /**
@@ -121,5 +182,5 @@ var renderPins = function (pins) {
   pinsContainer.appendChild(fragment);
 };
 
+mainPin.addEventListener('mouseup', onMainPinMouseUp);
 setup();
-renderPins(addObjects(NUMBER_OF_LOCATION));
