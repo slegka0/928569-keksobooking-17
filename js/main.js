@@ -14,6 +14,10 @@ var adFormInputs = Array.from(adForm.querySelectorAll('input'));
 var adFormSelects = Array.from(adForm.querySelectorAll('select'));
 var adFormButtons = Array.from(adForm.querySelectorAll('button'));
 var adFormTextareas = Array.from(adForm.querySelectorAll('textarea'));
+var timeIn = document.querySelector('#timein');
+var timeOut = document.querySelector('#timeout');
+var houseType = document.querySelector('#type');
+var priceForNight = document.querySelector('#price');
 var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas);
 var addressInput = adForm.querySelector('#address');
 var avatars = ['user01', 'user02', 'user03', 'user04', 'user05', 'user06', 'user07', 'user08'];
@@ -22,6 +26,12 @@ var mapEndX = map[0].clientWidth;
 var mapPinButton = document.querySelector('#pin').content.querySelector('.map__pin');
 var pinsContainer = document.querySelector('.map__pins');
 var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
+var minPrices = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
 
 /**
  * Задает предварительные настройки
@@ -152,6 +162,45 @@ var addObjects = function (countOfObjects) {
   return myObjects;
 };
 
+// Ниже код для времени заезда и выезда.
+//  Пытался написать универсальную функцию, которая принимала бы на вход элемент, который изменяется, а дальше уже производила действия, но мы ведь в обработчик события не можем ничего передавать? :(
+//  var onTimeChange = function (element) {
+//    if (element === timeIn) {
+//      timeOut.value = element.value;
+//    } else {
+//      timeIn.value = element.value;
+//  }
+// (Кстати, можно ли было заменить код выше, вот такой штукой? element === timeIn ? timeOut.value = element.value : timeIn.value = element.value;
+//  У меня почему-то не вышло, element до === подчеркивался)
+//  };
+//  В итоге пришлось писать два обработчика для каждого из элементов, нормально ли в данной ситуации?
+
+/**
+ * Изменяет значение времени выезда, в ответ на изменение времени заезда
+ */
+var onTimeInChange = function () {
+  timeOut.value = timeIn.value;
+};
+
+/**
+ * Изменяет значение времени заезда, в ответ на изменение времени выезда
+ */
+var onTimeOutChange = function () {
+  timeIn.value = timeOut.value;
+};
+
+/**
+ * Меняет плейсхолдер и минимальное значение поля с ценой за ночь в ответ на изменение поля тип жилья
+ */
+var onHouseTypeChange = function () {
+  for (var key in minPrices) {
+    if (key.toString() === houseType.value.toString()) {
+      priceForNight.placeholder = minPrices[key];
+      priceForNight.min = minPrices[key];
+    }
+  }
+}
+
 /**
  * Создает метку для хаты, путём клонирования шаблона и подгона значений его атрибутов
  * @param {object} somePin Объект, для которого создаётся метка
@@ -183,4 +232,7 @@ var renderPins = function (pins) {
 };
 
 mainPin.addEventListener('mouseup', onMainPinMouseUp);
+houseType.addEventListener('change', onHouseTypeChange);
+timeOut.addEventListener('change', onTimeOutChange);
+timeIn.addEventListener('change', onTimeInChange);
 setup();
