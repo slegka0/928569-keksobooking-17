@@ -162,43 +162,25 @@ var addObjects = function (countOfObjects) {
   return myObjects;
 };
 
-// Ниже код для времени заезда и выезда.
-//  Пытался написать универсальную функцию, которая принимала бы на вход элемент, который изменяется, а дальше уже производила действия, но мы ведь в обработчик события не можем ничего передавать? :(
-//  var onTimeChange = function (element) {
-//    if (element === timeIn) {
-//      timeOut.value = element.value;
-//    } else {
-//      timeIn.value = element.value;
-//  }
-// (Кстати, можно ли было заменить код выше, вот такой штукой? element === timeIn ? timeOut.value = element.value : timeIn.value = element.value;
-//  У меня почему-то не вышло, element до === подчеркивался)
-//  };
-//  В итоге пришлось писать два обработчика для каждого из элементов, нормально ли в данной ситуации?
-
 /**
- * Изменяет значение времени выезда, в ответ на изменение времени заезда
+ * Меняет время заезда в ответ на изменение времени выезда и наоборот
+ * @param {Object} evt Стандартый объект события (event)
  */
-var onTimeInChange = function () {
-  timeOut.value = timeIn.value;
-};
-
-/**
- * Изменяет значение времени заезда, в ответ на изменение времени выезда
- */
-var onTimeOutChange = function () {
-  timeIn.value = timeOut.value;
+var onTimeChange = function (evt) {
+  if (evt.currentTarget === timeIn) {
+    timeOut.value = evt.currentTarget.value;
+  } else {
+    timeIn.value = evt.currentTarget.value;
+  }
 };
 
 /**
  * Меняет плейсхолдер и минимальное значение поля с ценой за ночь в ответ на изменение поля тип жилья
+ * @param {Object} evt Стандартый объект события (event)
  */
-var onHouseTypeChange = function () {
-  for (var key in minPrices) {
-    if (key.toString() === houseType.value.toString()) {
-      priceForNight.placeholder = minPrices[key];
-      priceForNight.min = minPrices[key];
-    }
-  }
+var onHouseTypeChange = function (evt) {
+  priceForNight.placeholder = minPrices[evt.currentTarget.value];
+  priceForNight.min = minPrices[evt.currentTarget.value];
 };
 
 /**
@@ -233,6 +215,6 @@ var renderPins = function (pins) {
 
 mainPin.addEventListener('mouseup', onMainPinMouseUp);
 houseType.addEventListener('change', onHouseTypeChange);
-timeOut.addEventListener('change', onTimeOutChange);
-timeIn.addEventListener('change', onTimeInChange);
+timeOut.addEventListener('change', onTimeChange);
+timeIn.addEventListener('change', onTimeChange);
 setup();
