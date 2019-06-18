@@ -199,7 +199,7 @@ var onHouseTypeChange = function () {
       priceForNight.min = minPrices[key];
     }
   }
-}
+};
 
 /**
  * Создает метку для хаты, путём клонирования шаблона и подгона значений его атрибутов
