@@ -1,5 +1,8 @@
 'use strict';
 
+var MAIN_PIN_ARROW = 18;
+var MAIN_PIN_WIDTH = 62;
+var MAIN_PIN_HEIGHT = 62;
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
 var MAP_START_X = 0;
@@ -7,6 +10,9 @@ var MAP_START_Y = 130;
 var MAP_END_Y = 630;
 var NUMBER_OF_LOCATION = 8;
 
+var firstStart = true;
+var pinMode = 'round';
+var ifMouseMoved = false;
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
 var mapFilter = document.querySelector('.map__filters');
@@ -68,19 +74,78 @@ var cutTwoLastSymbols = function (someString) {
 var findPinCoordinates = function (mode) {
   var mainPinX = mainPin.style.left;
   var mainPinY = mainPin.style.top;
-  mainPinX = cutTwoLastSymbols(mainPinX);
-  mainPinY = cutTwoLastSymbols(mainPinY);
+  mainPinX = cutTwoLastSymbols(mainPinX) + MAIN_PIN_WIDTH / 2;
+  mainPinY = cutTwoLastSymbols(mainPinY) + MAIN_PIN_HEIGHT / 2;
   if (mode === 'shapeless') {
-    mainPinX = mainPinX - PIN_WIDTH / 2;
-    mainPinY = mainPinY - PIN_HEIGHT;
+    mainPinY = mainPinY + MAIN_PIN_HEIGHT / 2 + MAIN_PIN_ARROW;
   }
   addressInput.value = mainPinX + ',' + mainPinY;
 };
 
 /**
+ * Описывает drag-and-drop для главной метки
+ * @param {Object} evt Стандартый объект события (event)
+ */
+var onMainPinMouseDown = function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMainPinMouseMove = function (moveEvt) {
+    ifMouseMoved = true;
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+    var mainPinTop = mainPin.offsetTop - shift.y;
+    var mainPinLeft = mainPin.offsetLeft - shift.x;
+    if (mainPinTop > MAP_END_Y) {
+      mainPinTop = MAP_END_Y;
+    }
+    if (mainPinTop < MAP_START_Y) {
+      mainPinTop = MAP_START_Y;
+    }
+    if (mainPinLeft > mapEndX - MAIN_PIN_WIDTH) {
+      mainPinLeft = mapEndX - MAIN_PIN_WIDTH;
+    }
+    if (mainPinLeft < MAP_START_X) {
+      mainPinLeft = MAP_START_X;
+    }
+
+    mainPin.style.top = mainPinTop + 'px';
+    mainPin.style.left = mainPinLeft + 'px';
+    findPinCoordinates(pinMode);
+  };
+
+  var onMainPinMouseUp = function () {
+    if (firstStart && ifMouseMoved) {
+      startPage();
+      firstStart = false;
+      pinMode = 'shapeless';
+    }
+    findPinCoordinates(pinMode);
+    document.removeEventListener('mousemove', onMainPinMouseMove);
+    document.removeEventListener('mouseup', onMainPinMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMainPinMouseMove);
+  document.addEventListener('mouseup', onMainPinMouseUp);
+};
+
+/**
  * Переводит страницу в активное состояние
  */
-var onMainPinMouseUp = function () {
+var startPage = function () {
   if (map[0].classList.contains('map--faded')) {
     map[0].classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
@@ -213,7 +278,7 @@ var renderPins = function (pins) {
   pinsContainer.appendChild(fragment);
 };
 
-mainPin.addEventListener('mouseup', onMainPinMouseUp);
+mainPin.addEventListener('mousedown', onMainPinMouseDown);
 houseType.addEventListener('change', onHouseTypeChange);
 timeOut.addEventListener('change', onTimeChange);
 timeIn.addEventListener('change', onTimeChange);
