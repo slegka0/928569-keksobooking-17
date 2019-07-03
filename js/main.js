@@ -1,5 +1,8 @@
 'use strict';
 
+var MAIN_PIN_ARROW = 18;
+var MAIN_PIN_WIDTH = 62;
+var MAIN_PIN_HEIGHT = 62;
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
 var MAP_START_X = 0;
@@ -7,8 +10,9 @@ var MAP_START_Y = 130;
 var MAP_END_Y = 630;
 var NUMBER_OF_LOCATION = 8;
 
-var firstStart = true;//  Первое ли перемещение метки
-var pinMode = '';// Форма метки, круглая или с острым концом (с острым концом обозначается как 'shapeless')
+var firstStart = true;
+var pinMode = 'round';
+var ifMouseMoved = false;
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
 var mapFilter = document.querySelector('.map__filters');
@@ -70,11 +74,10 @@ var cutTwoLastSymbols = function (someString) {
 var findPinCoordinates = function (mode) {
   var mainPinX = mainPin.style.left;
   var mainPinY = mainPin.style.top;
-  mainPinX = cutTwoLastSymbols(mainPinX);
-  mainPinY = cutTwoLastSymbols(mainPinY);
+  mainPinX = cutTwoLastSymbols(mainPinX) + MAIN_PIN_WIDTH / 2;
+  mainPinY = cutTwoLastSymbols(mainPinY) + MAIN_PIN_HEIGHT / 2;
   if (mode === 'shapeless') {
-    mainPinX = mainPinX - PIN_WIDTH / 2;
-    mainPinY = mainPinY - PIN_HEIGHT;
+    mainPinY = mainPinY + MAIN_PIN_HEIGHT / 2 + MAIN_PIN_ARROW;
   }
   addressInput.value = mainPinX + ',' + mainPinY;
 };
@@ -92,6 +95,7 @@ var onMainPinMouseDown = function (evt) {
   };
 
   var onMainPinMouseMove = function (moveEvt) {
+    ifMouseMoved = true;
     moveEvt.preventDefault();
 
     var shift = {
@@ -111,21 +115,20 @@ var onMainPinMouseDown = function (evt) {
     if (mainPinTop < MAP_START_Y) {
       mainPinTop = MAP_START_Y;
     }
-    if (mainPinLeft > mapEndX) {
-      mainPinTop = mapEndX;
+    if (mainPinLeft > mapEndX - MAIN_PIN_WIDTH) {
+      mainPinLeft = mapEndX - MAIN_PIN_WIDTH;
     }
     if (mainPinLeft < MAP_START_X) {
-      mainPinTop = MAP_START_X;
+      mainPinLeft = MAP_START_X;
     }
 
     mainPin.style.top = mainPinTop + 'px';
     mainPin.style.left = mainPinLeft + 'px';
-
     findPinCoordinates(pinMode);
   };
 
   var onMainPinMouseUp = function () {
-    if (firstStart) {
+    if (firstStart && ifMouseMoved) {
       startPage();
       firstStart = false;
       pinMode = 'shapeless';
