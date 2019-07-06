@@ -4,7 +4,13 @@
   var MAIN_PIN_ARROW = 18;
   var MAIN_PIN_WIDTH = 62;
   var MAIN_PIN_HEIGHT = 62;
-  var NUMBER_OF_LOCATION = 8;
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
+  var MAP_START_X = 0;
+  var MAP_START_Y = 130;
+  var MAP_END_Y = 630;
+  var map = document.querySelectorAll('.map');
+  var mapEndX = map[0].clientWidth;
   var ifMouseMoved = false;
   var firstStart = true;
   var pinMode = 'round';
@@ -18,12 +24,12 @@
    * Переводит страницу в активное состояние
    */
   var startPage = function () {
-    if (window.data.map[0].classList.contains('map--faded')) {
-      window.data.map[0].classList.remove('map--faded');
+    if (map[0].classList.contains('map--faded')) {
+      map[0].classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
       mapFilter.classList.remove('map__filters--disabled');
       window.form.toggleActiveMode(window.form.adFormFields, false);
-      renderPins(window.data.addObjects(NUMBER_OF_LOCATION));
+      window.load.load(onSuccessLoad, onErrorLoad);
     } else {
       window.form.findPinCoordinates('shapeless');
     }
@@ -55,17 +61,17 @@
       };
       var mainPinTop = mainPin.offsetTop - shift.y;
       var mainPinLeft = mainPin.offsetLeft - shift.x;
-      if (mainPinTop > window.data.MAP_END_Y) {
-        mainPinTop = window.data.MAP_END_Y;
+      if (mainPinTop > MAP_END_Y) {
+        mainPinTop = MAP_END_Y;
       }
-      if (mainPinTop < window.data.MAP_START_Y) {
-        mainPinTop = window.data.MAP_START_Y;
+      if (mainPinTop < MAP_START_Y) {
+        mainPinTop = MAP_START_Y;
       }
-      if (mainPinLeft > window.data.mapEndX - MAIN_PIN_WIDTH) {
-        mainPinLeft = window.data.mapEndX - MAIN_PIN_WIDTH;
+      if (mainPinLeft > mapEndX - MAIN_PIN_WIDTH) {
+        mainPinLeft = mapEndX - MAIN_PIN_WIDTH;
       }
-      if (mainPinLeft < window.data.MAP_START_X) {
-        mainPinLeft = window.data.MAP_START_X;
+      if (mainPinLeft < MAP_START_X) {
+        mainPinLeft = MAP_START_X;
       }
 
       mainPin.style.top = mainPinTop + 'px';
@@ -95,28 +101,51 @@
    */
   var generatePin = function (somePin) {
     var pin = mapPinButton.cloneNode(true);
-    var pinPositionX = somePin.location.X - window.data.PIN_WIDTH / 2 + 'px';
-    var pinPositionY = somePin.location.Y - window.data.PIN_HEIGHT + 'px';
+    var pinPositionX = somePin.location.x - PIN_WIDTH / 2 + 'px';
+    var pinPositionY = somePin.location.y - PIN_HEIGHT + 'px';
+    var pinAlt = somePin.offer.description;
     var pinImg = somePin.author.avatar;
 
     pin.style.left = pinPositionX;
     pin.style.top = pinPositionY;
     pin.querySelector('img').src = pinImg;
-    pin.querySelector('img').alt = 'Какой-то там заголовок объявления';
+    pin.querySelector('img').alt = pinAlt;
     return pin;
   };
 
   /**
-   * Отрисовывает метки на карте
-   * @param {Object[]} pins Массив из объектов, которые нужно отрисовать
+   * Отрисовывает метки на карте, используя данные с сервера
+   * @param {[]} offers Массив с данными для отрисовки
    */
-  var renderPins = function (pins) {
+  var renderPins = function (offers) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < pins.length; i++) {
-      fragment.appendChild(generatePin(pins[i]));
+
+    for (var i = 0; i < offers.length; i++) {
+      fragment.appendChild(generatePin(offers[i]));
     }
     pinsContainer.appendChild(fragment);
   };
+
+  /**
+   * Показывает ошибку, если произошли проблемы в процессе загрузки данных о "соседях" с сервера
+   */
+  var onErrorLoad = function () {
+    var mainBlock = document.querySelector('main');
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorBlock = errorTemplate.cloneNode(true);
+    var errorDescription = errorBlock.querySelector('.error__message');
+    errorDescription.textContent = 'Ошибка получения данных ;(';
+    mainBlock.appendChild(errorBlock);
+  };
+
+  /**
+   * Выполняет отрисовку пинов на карте, если их загрузка произошла успешно
+   * @param {[]} offers Массив с данными для отрисовки
+   */
+  var onSuccessLoad = function (offers) {
+    renderPins(offers);
+  };
+
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
   window.pin = {
     'MAIN_PIN_ARROW': MAIN_PIN_ARROW,
