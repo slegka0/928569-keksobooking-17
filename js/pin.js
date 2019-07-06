@@ -136,7 +136,7 @@
     var errorDescription = errorBlock.querySelector('.error__message');
     errorDescription.textContent = 'Ошибка получения данных ;(';
     mainBlock.appendChild(errorBlock);
-  }
+  };
 
   /**
    * Выполняет отрисовку пинов на карте, если их загрузка произошла успешно
