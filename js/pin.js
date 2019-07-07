@@ -119,7 +119,6 @@
    */
   var renderPins = function (offers) {
     var fragment = document.createDocumentFragment();
-
     for (var i = 0; i < offers.length; i++) {
       fragment.appendChild(generatePin(offers[i]));
     }
@@ -139,11 +138,13 @@
   };
 
   /**
-   * Выполняет отрисовку пинов на карте, если их загрузка произошла успешно
+   * Выполняет отрисовку пяти пинов на карте, если их загрузка произошла успешно
    * @param {[]} offers Массив с данными для отрисовки
    */
   var onSuccessLoad = function (offers) {
-    renderPins(offers);
+    window.pins = offers;
+    var miniOffers = offers.slice(0, 5);
+    renderPins(miniOffers);
   };
 
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
@@ -151,6 +152,7 @@
     'MAIN_PIN_ARROW': MAIN_PIN_ARROW,
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
     'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
-    'mainPin': mainPin
+    'mainPin': mainPin,
+    'renderPins': renderPins
   };
 })();
