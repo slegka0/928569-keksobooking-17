@@ -29,7 +29,7 @@
         return it.offer.type === typeChoice;
       }
     };
-    var filteredAds = ads.filter(checkTypes).slice(0, 5);
+    var filteredAds = ads.filter(checkTypes).slice(0, window.pin.MAX_PIN);
     window.pin.renderPins(filteredAds);
     window.card.deleteCurrentCard();
     window.card.renderCard(filteredAds[0]);

@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var ESC_CODE = 27;
+  var IMG_WIDTH = 45;
+  var IMG_HEIGHT = 40;
   /**
    * Создает карточку объявления и возвращает её
    * @param {Object} ad Объект с данными, которые будут записаны на карточке
@@ -46,8 +49,8 @@
     for (var j = 0; j < ad.offer.photos.length; j++) {
       var img = document.createElement('img');
       img.src = ad.offer.photos[j];
-      img.height = 40;
-      img.width = 45;
+      img.height = IMG_HEIGHT;
+      img.width = IMG_WIDTH;
       cardPhotos.appendChild(img);
     }
 
@@ -65,7 +68,28 @@
   };
 
   /**
-   * Удаляет из DOM'а отрисованную карточку объявления, если она существует (Помогает не засорять разметку кучей наложенных друг на друга карточек)
+   * Закрывает карточку объявлений по нажатию на крестик
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onCloseButtonClick = function (evt) {
+    var closeButton = document.querySelector('.popup__close');
+    if (evt.target === closeButton) {
+      deleteCurrentCard();
+    }
+  };
+
+  /**
+   * Закрывает карточку объявлений по нажатию на клавишу ESC
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onEscPress = function (evt) {
+    if (evt.keyCode === ESC_CODE) {
+      deleteCurrentCard();
+    }
+  };
+
+  /**
+   * Удаляет из DOM'а отрисованную карточку объявления, если она существует
    */
   var deleteCurrentCard = function () {
     var currentCard = window.pin.map.querySelector('article.map__card');
@@ -74,9 +98,21 @@
     }
   };
 
+  /**
+   * Срабатывает при клике на метку объявлений, открывая соответствующую карточку, если до этого какая-то карточка была открыта - закрывает её
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onPinClick = function (evt) {
+    deleteCurrentCard();
+    renderCard(evt.target.fullData);
+  };
+
+  document.addEventListener('keydown', onEscPress);
+  document.addEventListener('click', onCloseButtonClick);
   window.card = {
     'generateCard': generateCard,
     'renderCard': renderCard,
-    'deleteCurrentCard': deleteCurrentCard
+    'deleteCurrentCard': deleteCurrentCard,
+    'onPinClick': onPinClick
   };
 })();
