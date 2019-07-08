@@ -132,6 +132,7 @@
   }
 
   window.filter = {
-    'allFilters': allFilters
+    'allFilters': allFilters,
+    'cleanMap': cleanMap
   };
 })();
