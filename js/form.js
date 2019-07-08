@@ -32,6 +32,7 @@
    */
   var setup = function () {
     toggleActiveMode(adFormFields, true);
+    toggleActiveMode(window.filter.allFilters, true);
     findPinCoordinates('circle');
   };
 
