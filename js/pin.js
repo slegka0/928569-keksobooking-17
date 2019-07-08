@@ -9,6 +9,7 @@
   var MAP_START_X = 0;
   var MAP_START_Y = 130;
   var MAP_END_Y = 630;
+  var MAX_PIN = 5;
   var map = document.querySelector('.map');
   var mapEndX = map.clientWidth;
   var ifMouseMoved = false;
@@ -95,22 +96,33 @@
   };
 
   /**
-   * Создает метку для хаты, путём клонирования шаблона и подгона значений его атрибутов
-   * @param {object} somePin Объект, для которого создаётся метка
+   * Функция-конструктор для пинов, которые отрисовываются на карте
+   * @param {Object} somePin Содержит объект с данными для отрисовки самого пина и его карточки
+   * @constructor
+   */
+  var Pin = function (somePin) {
+    this.pin = mapPinButton.cloneNode(true);
+    this.pinPositionX = somePin.location.x - PIN_WIDTH / 2 + 'px';
+    this.pinPositionY = somePin.location.y - PIN_HEIGHT + 'px';
+    this.pinAlt = somePin.offer.description;
+    this.pinImg = somePin.author.avatar;
+    this.setData = somePin;
+  };
+
+  /**
+   * Создает Создает пин для хаты
+   * @param {object} pin Объект, для которого создаётся метка
    * @return {Node}
    */
-  var generatePin = function (somePin) {
-    var pin = mapPinButton.cloneNode(true);
-    var pinPositionX = somePin.location.x - PIN_WIDTH / 2 + 'px';
-    var pinPositionY = somePin.location.y - PIN_HEIGHT + 'px';
-    var pinAlt = somePin.offer.description;
-    var pinImg = somePin.author.avatar;
-
-    pin.style.left = pinPositionX;
-    pin.style.top = pinPositionY;
-    pin.querySelector('img').src = pinImg;
-    pin.querySelector('img').alt = pinAlt;
-    return pin;
+  var generatePin = function (pin) {
+    var currentPin = new Pin(pin);
+    var currentNode = currentPin.pin;
+    currentNode.style.left = currentPin.pinPositionX;
+    currentNode.style.top = currentPin.pinPositionY;
+    currentNode.querySelector('img').src = currentPin.pinImg;
+    currentNode.querySelector('img').alt = currentPin.pinAlt;
+    currentNode.querySelector('img').fullData = currentPin.setData;
+    return currentNode;
   };
 
   /**
@@ -123,6 +135,10 @@
       fragment.appendChild(generatePin(offers[i]));
     }
     pinsContainer.appendChild(fragment);
+    window.allPins = window.pin.pinsContainer.querySelectorAll('button[type = button]');
+    for (var j = 0; j < window.allPins.length; j++) {
+      window.allPins[j].querySelector('img').addEventListener('click', window.card.onPinClick);
+    }
   };
 
   /**
@@ -138,12 +154,12 @@
   };
 
   /**
-   * Выполняет отрисовку пяти пинов на карте, если их загрузка произошла успешно
+   * Выполняет отрисовку пяти пинов на карте, если их загрузка произошла успешно и отрисовывает карточку для первого из них
    * @param {[]} offers Массив с данными для отрисовки
    */
   var onSuccessLoad = function (offers) {
     window.pins = offers;
-    var miniOffers = offers.slice(0, 5);
+    var miniOffers = offers.slice(0, MAX_PIN);
     renderPins(miniOffers);
     window.card.renderCard(offers[0]);
   };
@@ -156,6 +172,7 @@
     'mainPin': mainPin,
     'renderPins': renderPins,
     'pinsContainer': pinsContainer,
-    'map': map
+    'map': map,
+    'MAX_PIN': MAX_PIN
   };
 })();
