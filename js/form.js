@@ -7,6 +7,8 @@
   var houseType = document.querySelector('#type');
   var priceForNight = document.querySelector('#price');
   var addressInput = adForm.querySelector('#address');
+  var roomNumber = document.querySelector('#room_number');
+  var houseCapacity = document.querySelector('#capacity');
   var adFormInputs = Array.from(adForm.querySelectorAll('input'));
   var adFormSelects = Array.from(adForm.querySelectorAll('select'));
   var adFormButtons = Array.from(adForm.querySelectorAll('button'));
@@ -18,6 +20,13 @@
     house: 5000,
     palace: 10000
   };
+  var countOfRooms = {
+    1: [1],
+    2: [1, 2],
+    3: [1, 2, 3],
+    100: [0]
+  };
+
   /**
    * Задает предварительные настройки
    */
@@ -72,6 +81,39 @@
     priceForNight.placeholder = minPrices[evt.currentTarget.value];
     priceForNight.min = minPrices[evt.currentTarget.value];
   };
+
+  /**
+   * Генерит ошибку в зависимости от выбранного количества комнат и гостей
+   * @param {HTMLSelectElement} room Хранит в себе данные о выбранном количестве комнат
+   * @param {HTMLSelectElement} capacity Хранит в себе данные о выбранном количестве гостей
+   * @return {string}
+   */
+  var getCapacityError = function (room, capacity) {
+    var result = '';
+    if (Number(room.value) < Number(capacity.value)) {
+      result = 'Количество комнат меньше, чем количество гостей :(';
+    } else {
+      if (room.value === '100' || capacity.value === '0') {
+        result = '100 комнат идеально подойдут не для гостей';
+      }
+    }
+    return result;
+  };
+
+  /**
+   * Проверяет соответствие количества комнат количеству гостей
+   */
+  var onRoomOrCapacityChange = function () {
+    if (countOfRooms[roomNumber.value].indexOf(parseInt(houseCapacity.value, 10)) === -1) {
+      roomNumber.setCustomValidity(getCapacityError(roomNumber, houseCapacity));
+    } else {
+      roomNumber.setCustomValidity('');
+    }
+  };
+
+  [roomNumber, houseCapacity].forEach(function (select) {
+    select.addEventListener('change', onRoomOrCapacityChange);
+  });
   houseType.addEventListener('change', onHouseTypeChange);
   timeOut.addEventListener('change', onTimeChange);
   timeIn.addEventListener('change', onTimeChange);
