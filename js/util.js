@@ -29,9 +29,20 @@
     return arr[getRandomNumber(0, arr.length - 1)];
   };
 
+  /**
+   * Удаляет все дочерние элементы DOM-элемента
+   * @param {Node} node DOM-элемент, у которого удаляются все дочерние элементы
+   */
+  var deleteNodeChild = function (node) {
+    while (node.firstChild) {
+      node.removeChild(node.firstChild);
+    }
+  };
+
   window.util = {
     'cutTwoLastSymbols': cutTwoLastSymbols,
     'getRandomNumber': getRandomNumber,
     'getRandomElement': getRandomElement,
+    'deleteNodeChild': deleteNodeChild
   };
 })();
