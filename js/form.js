@@ -2,6 +2,7 @@
 
 (function () {
   var adForm = document.querySelector('.ad-form');
+  var resetButton = adForm.querySelector('.ad-form__reset');
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
   var houseType = document.querySelector('#type');
@@ -112,12 +113,30 @@
     }
   };
 
+  /**
+   * сбрасывает страницу в исходное неактивное состояние без перезагрузки: все заполненные поля стираются, метки похожих объявлений и карточка активного объявления удаляются,
+   * метка адреса возвращается в исходное положение, значение поля адреса корректируется соответственно положению метки.
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onResetClick = function (evt) {
+    var LEFT_CENTER = 570;
+    var TOP_CENTER = 375;
+    evt.preventDefault();
+    window.card.deleteCurrentCard();
+    window.filter.cleanMap();
+    window.pin.mainPin.style.left = LEFT_CENTER + 'px';
+    window.pin.mainPin.style.top = TOP_CENTER + 'px';
+    adForm.reset();
+    findPinCoordinates('round');
+  };
+
   [roomNumber, houseCapacity].forEach(function (select) {
     select.addEventListener('change', onRoomOrCapacityChange);
   });
   houseType.addEventListener('change', onHouseTypeChange);
   timeOut.addEventListener('change', onTimeChange);
   timeIn.addEventListener('change', onTimeChange);
+  resetButton.addEventListener('click', onResetClick);
   window.form = {
     'findPinCoordinates': findPinCoordinates,
     'toggleActiveMode': toggleActiveMode,
