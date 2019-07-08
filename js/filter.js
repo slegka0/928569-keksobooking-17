@@ -2,13 +2,12 @@
 
 (function () {
   var typeFilter = document.querySelector('#housing-type');
-  var map = document.querySelector('.map__pins');
 
   /**
    * Удаляет все пины с карты
    */
   var cleanMap = function () {
-    var pins = map.querySelectorAll('button[type = button]');
+    var pins = window.pin.pinsContainer.querySelectorAll('button[type = button]');
     for (var i = 0; i < pins.length; i++) {
       pins[i].remove();
     }
@@ -32,6 +31,8 @@
     };
     var filteredAds = ads.filter(checkTypes).slice(0, 5);
     window.pin.renderPins(filteredAds);
+    window.card.deleteCurrentCard();
+    window.card.renderCard(filteredAds[0]);
   };
 
   typeFilter.addEventListener('change', onHouseTypeChange);

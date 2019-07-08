@@ -9,8 +9,8 @@
   var MAP_START_X = 0;
   var MAP_START_Y = 130;
   var MAP_END_Y = 630;
-  var map = document.querySelectorAll('.map');
-  var mapEndX = map[0].clientWidth;
+  var map = document.querySelector('.map');
+  var mapEndX = map.clientWidth;
   var ifMouseMoved = false;
   var firstStart = true;
   var pinMode = 'round';
@@ -24,8 +24,8 @@
    * Переводит страницу в активное состояние
    */
   var startPage = function () {
-    if (map[0].classList.contains('map--faded')) {
-      map[0].classList.remove('map--faded');
+    if (map.classList.contains('map--faded')) {
+      map.classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
       mapFilter.classList.remove('map__filters--disabled');
       window.form.toggleActiveMode(window.form.adFormFields, false);
@@ -145,6 +145,7 @@
     window.pins = offers;
     var miniOffers = offers.slice(0, 5);
     renderPins(miniOffers);
+    window.card.renderCard(offers[0]);
   };
 
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
@@ -153,6 +154,8 @@
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
     'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
     'mainPin': mainPin,
-    'renderPins': renderPins
+    'renderPins': renderPins,
+    'pinsContainer': pinsContainer,
+    'map': map
   };
 })();
