@@ -182,6 +182,7 @@
     'renderPins': renderPins,
     'pinsContainer': pinsContainer,
     'map': map,
-    'MAX_PIN': MAX_PIN
+    'MAX_PIN': MAX_PIN,
+    'mapFilter': mapFilter
   };
 })();

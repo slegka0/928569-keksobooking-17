@@ -10,7 +10,6 @@
   var roomNumber = document.querySelector('#room_number');
   var houseCapacity = document.querySelector('#capacity');
   var resetButton = adForm.querySelector('.ad-form__reset');
-  var mapFilter = document.querySelector('.map__filters');
   var adFormInputs = Array.from(adForm.querySelectorAll('input'));
   var adFormSelects = Array.from(adForm.querySelectorAll('select'));
   var adFormButtons = Array.from(adForm.querySelectorAll('button'));
@@ -135,7 +134,7 @@
     window.pin.mainPin.style.top = TOP_CENTER + 'px';
     window.pin.map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
-    mapFilter.classList.add('map__filters--disabled');
+    window.pin.mapFilter.classList.add('map__filters--disabled');
     adForm.reset();
     setup();
   };
