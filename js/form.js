@@ -2,6 +2,7 @@
 
 (function () {
   var adForm = document.querySelector('.ad-form');
+  var resetButton = adForm.querySelector('.ad-form__reset');
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
   var houseType = document.querySelector('#type');
@@ -120,6 +121,7 @@
   };
 
   /**
+
    * Переводит страницу в неактивное состояние
    */
   var deactivatePage = function () {
@@ -128,6 +130,7 @@
     window.firstStart = true;
     window.ifMouseMoved = false;
     window.pinMode = 'round';
+
     window.card.deleteCurrentCard();
     window.filter.cleanMap();
     window.pin.mainPin.style.left = LEFT_CENTER + 'px';
