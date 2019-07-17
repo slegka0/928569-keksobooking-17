@@ -9,18 +9,21 @@
   var addressInput = adForm.querySelector('#address');
   var roomNumber = document.querySelector('#room_number');
   var houseCapacity = document.querySelector('#capacity');
+  var resetButton = adForm.querySelector('.ad-form__reset');
+  var mapFilter = document.querySelector('.map__filters');
   var adFormInputs = Array.from(adForm.querySelectorAll('input'));
   var adFormSelects = Array.from(adForm.querySelectorAll('select'));
   var adFormButtons = Array.from(adForm.querySelectorAll('button'));
   var adFormTextareas = Array.from(adForm.querySelectorAll('textarea'));
-  var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas);
+  var adFormLabels = Array.from(adForm.querySelectorAll('label'));
+  var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas, adFormLabels);
   var minPrices = {
     bungalo: 0,
     flat: 1000,
     house: 5000,
     palace: 10000
   };
-  var countOfRooms = {
+  var numberOfRooms = {
     1: [1],
     2: [1, 2],
     3: [1, 2, 3],
@@ -48,7 +51,7 @@
     if (mode === 'shapeless') {
       mainPinY = mainPinY + window.pin.MAIN_PIN_HEIGHT / 2 + window.pin.MAIN_PIN_ARROW;
     }
-    addressInput.value = mainPinX + ',' + mainPinY;
+    addressInput.value = mainPinX + ', ' + mainPinY;
   };
 
   /**
@@ -58,7 +61,12 @@
    */
   var toggleActiveMode = function (formElements, disabled) {
     for (var i = 0; i < formElements.length; i++) {
-      formElements[i].disabled = disabled ? true : false;
+      formElements[i].disabled = disabled;
+      if (disabled) {
+        formElements[i].classList.add('no-active');
+      } else {
+        formElements[i].classList.remove('no-active');
+      }
     }
   };
 
@@ -105,11 +113,40 @@
    * Проверяет соответствие количества комнат количеству гостей
    */
   var onRoomOrCapacityChange = function () {
-    if (countOfRooms[roomNumber.value].indexOf(parseInt(houseCapacity.value, 10)) === -1) {
+    if (numberOfRooms[roomNumber.value].indexOf(parseInt(houseCapacity.value, 10)) === -1) {
       roomNumber.setCustomValidity(getCapacityError(roomNumber, houseCapacity));
     } else {
       roomNumber.setCustomValidity('');
     }
+  };
+
+  /**
+   * Переводит страницу в неактивное состояние
+   */
+  var deactivatePage = function () {
+    var LEFT_CENTER = 570;
+    var TOP_CENTER = 375;
+    window.firstStart = true;
+    window.ifMouseMoved = false;
+    window.pinMode = 'round';
+    window.card.deleteCurrentCard();
+    window.filter.cleanMap();
+    window.pin.mainPin.style.left = LEFT_CENTER + 'px';
+    window.pin.mainPin.style.top = TOP_CENTER + 'px';
+    window.pin.map.classList.add('map--faded');
+    adForm.classList.add('ad-form--disabled');
+    mapFilter.classList.add('map__filters--disabled');
+    adForm.reset();
+    setup();
+  };
+
+  /**
+   * Срабатывает по нажатию на кнопку 'Очистить'
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onResetClick = function (evt) {
+    evt.preventDefault();
+    deactivatePage();
   };
 
   [roomNumber, houseCapacity].forEach(function (select) {
@@ -118,6 +155,7 @@
   houseType.addEventListener('change', onHouseTypeChange);
   timeOut.addEventListener('change', onTimeChange);
   timeIn.addEventListener('change', onTimeChange);
+  resetButton.addEventListener('click', onResetClick);
   window.form = {
     'findPinCoordinates': findPinCoordinates,
     'toggleActiveMode': toggleActiveMode,

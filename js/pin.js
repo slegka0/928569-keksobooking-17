@@ -12,14 +12,14 @@
   var MAX_PIN = 5;
   var map = document.querySelector('.map');
   var mapEndX = map.clientWidth;
-  var ifMouseMoved = false;
-  var firstStart = true;
-  var pinMode = 'round';
   var mainPin = document.querySelector('.map__pin--main');
   var mapPinButton = document.querySelector('#pin').content.querySelector('.map__pin');
   var pinsContainer = document.querySelector('.map__pins');
   var adForm = document.querySelector('.ad-form');
   var mapFilter = document.querySelector('.map__filters');
+  window.ifMouseMoved = false;
+  window.firstStart = true;
+  window.pinMode = 'round';
 
   /**
    * Переводит страницу в активное состояние
@@ -36,6 +36,7 @@
       window.form.findPinCoordinates('shapeless');
     }
   };
+
   /**
    * Описывает drag-and-drop для главной метки
    * @param {Object} evt Стандартый объект события (event)
@@ -49,8 +50,8 @@
     };
 
     var onMainPinMouseMove = function (moveEvt) {
-      ifMouseMoved = true;
       moveEvt.preventDefault();
+      window.ifMouseMoved = true;
 
       var shift = {
         x: startCoords.x - moveEvt.clientX,
@@ -63,11 +64,17 @@
       };
       var mainPinTop = mainPin.offsetTop - shift.y;
       var mainPinLeft = mainPin.offsetLeft - shift.x;
-      if (mainPinTop > MAP_END_Y) {
-        mainPinTop = MAP_END_Y;
+      if (mainPinTop > MAP_END_Y - MAIN_PIN_HEIGHT / 2 && window.pinMode === 'round') {
+        mainPinTop = MAP_END_Y - MAIN_PIN_HEIGHT / 2;
       }
-      if (mainPinTop < MAP_START_Y) {
-        mainPinTop = MAP_START_Y;
+      if (mainPinTop > MAP_END_Y - MAIN_PIN_HEIGHT - MAIN_PIN_ARROW && window.pinMode === 'shapeless') {
+        mainPinTop = MAP_END_Y - MAIN_PIN_HEIGHT - MAIN_PIN_ARROW;
+      }
+      if (mainPinTop < MAP_START_Y - MAIN_PIN_HEIGHT / 2 && window.pinMode === 'round') {
+        mainPinTop = MAP_START_Y - MAIN_PIN_HEIGHT / 2;
+      }
+      if (mainPinTop < MAP_START_Y - MAIN_PIN_HEIGHT - MAIN_PIN_ARROW && window.pinMode === 'shapeless') {
+        mainPinTop = MAP_START_Y - MAIN_PIN_HEIGHT - MAIN_PIN_ARROW;
       }
       if (mainPinLeft > mapEndX - MAIN_PIN_WIDTH) {
         mainPinLeft = mapEndX - MAIN_PIN_WIDTH;
@@ -78,16 +85,18 @@
 
       mainPin.style.top = mainPinTop + 'px';
       mainPin.style.left = mainPinLeft + 'px';
-      window.form.findPinCoordinates(pinMode);
+      window.form.findPinCoordinates(window.pinMode);
     };
 
     var onMainPinMouseUp = function () {
-      if (firstStart && ifMouseMoved) {
+      if (window.firstStart && window.ifMouseMoved) {
         startPage();
-        firstStart = false;
-        pinMode = 'shapeless';
+        var mainPinTop = window.util.cutTwoLastSymbols(mainPin.style.top) - MAIN_PIN_HEIGHT / 2 - MAIN_PIN_ARROW;
+        mainPin.style.top = mainPinTop + 'px';
+        window.firstStart = false;
+        window.pinMode = 'shapeless';
       }
-      window.form.findPinCoordinates(pinMode);
+      window.form.findPinCoordinates(window.pinMode);
       document.removeEventListener('mousemove', onMainPinMouseMove);
       document.removeEventListener('mouseup', onMainPinMouseUp);
     };
@@ -111,7 +120,6 @@
   };
 
   /**
-   * Создает Создает пин для хаты
    * @param {object} pin Объект, для которого создаётся метка
    * @return {Node}
    */
@@ -120,9 +128,10 @@
     var currentNode = currentPin.pin;
     currentNode.style.left = currentPin.pinPositionX;
     currentNode.style.top = currentPin.pinPositionY;
+    currentNode.fullData = currentPin.setData;
     currentNode.querySelector('img').src = currentPin.pinImg;
     currentNode.querySelector('img').alt = currentPin.pinAlt;
-    currentNode.querySelector('img').fullData = currentPin.setData;
+    currentNode.querySelector('img').fullData = currentNode.fullData;
     return currentNode;
   };
 
@@ -138,7 +147,7 @@
     pinsContainer.appendChild(fragment);
     window.allPins = window.pin.pinsContainer.querySelectorAll('button[type = button]');
     for (var j = 0; j < window.allPins.length; j++) {
-      window.allPins[j].querySelector('img').addEventListener('click', window.card.onPinClick);
+      window.allPins[j].addEventListener('click', window.card.onPinClick);
     }
   };
 
@@ -162,7 +171,6 @@
     window.pins = offers;
     var miniOffers = offers.slice(0, MAX_PIN);
     renderPins(miniOffers);
-    window.card.renderCard(offers[0]);
   };
 
   mainPin.addEventListener('mousedown', onMainPinMouseDown);

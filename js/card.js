@@ -93,6 +93,10 @@
    */
   var deleteCurrentCard = function () {
     var currentCard = window.pin.map.querySelector('article.map__card');
+    var currentPin = window.pin.pinsContainer.querySelector('.map__pin--active');
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
     if (currentCard) {
       window.pin.map.removeChild(currentCard);
     }
@@ -104,6 +108,7 @@
    */
   var onPinClick = function (evt) {
     deleteCurrentCard();
+    evt.currentTarget.classList.add('map__pin--active');
     renderCard(evt.target.fullData);
   };
 

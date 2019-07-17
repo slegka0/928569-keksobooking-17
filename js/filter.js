@@ -99,16 +99,16 @@
      * @return {boolean|*}
      */
     var checkFeatures = function (it) {
-      var featuresChecked = [];
+      var checkedFeatures = [];
       for (var i = 0; i < featuresInputs.length; i++) {
         if (featuresInputs[i].checked) {
-          featuresChecked.push(featuresInputs[i].value);
+          checkedFeatures.push(featuresInputs[i].value);
         }
       }
-      if (featuresChecked.length === 0) {
+      if (checkedFeatures.length === 0) {
         return it;
       } else {
-        return featuresChecked.every(function (elem) {
+        return checkedFeatures.every(function (elem) {
           return it.offer.features.indexOf(elem) !== -1;
         });
       }
@@ -132,6 +132,7 @@
   }
 
   window.filter = {
-    'allFilters': allFilters
+    'allFilters': allFilters,
+    'cleanMap': cleanMap
   };
 })();
