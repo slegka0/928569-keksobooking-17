@@ -10,7 +10,6 @@
   var addressInput = adForm.querySelector('#address');
   var roomNumber = document.querySelector('#room_number');
   var houseCapacity = document.querySelector('#capacity');
-  var resetButton = adForm.querySelector('.ad-form__reset');
   var adFormInputs = Array.from(adForm.querySelectorAll('input'));
   var adFormSelects = Array.from(adForm.querySelectorAll('select'));
   var adFormButtons = Array.from(adForm.querySelectorAll('button'));
@@ -121,7 +120,6 @@
   };
 
   /**
-
    * Переводит страницу в неактивное состояние
    */
   var deactivatePage = function () {
@@ -130,7 +128,6 @@
     window.firstStart = true;
     window.ifMouseMoved = false;
     window.pinMode = 'round';
-
     window.card.deleteCurrentCard();
     window.filter.cleanMap();
     window.pin.mainPin.style.left = LEFT_CENTER + 'px';
