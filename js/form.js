@@ -137,6 +137,17 @@
     adForm.classList.add('ad-form--disabled');
     window.pin.mapFilter.classList.add('map__filters--disabled');
     adForm.reset();
+    for (var i = 0; i < window.filter.allFilters.length; i++) {
+      window.filter.allFilters[i].removeEventListener('change', window.filter.onFilterValueChange);
+    }
+    [roomNumber, houseCapacity].forEach(function (select) {
+      select.removeEventListener('change', onRoomOrCapacityChange);
+    });
+    houseType.removeEventListener('change', onHouseTypeChange);
+    timeOut.removeEventListener('change', onTimeChange);
+    timeIn.removeEventListener('change', onTimeChange);
+    adForm.removeEventListener('submit', onSubmitForm);
+    resetButton.removeEventListener('click', onResetClick);
     setup();
   };
 
@@ -149,6 +160,9 @@
     deactivatePage();
   };
 
+  /**
+   * Показывает окно успешной отправки данных на сервер
+   */
   var onSuccessUpload = function () {
     deactivatePage();
     var templateSuccess = document.querySelector('#success').content;
@@ -160,6 +174,10 @@
     document.addEventListener('click', onRemovingPress);
   };
 
+  /**
+   * Удаляет окно ошибки/успеха (отправки/получения данных) при нажатии на ESC или клику
+   * @param {Object} evt Стандартый объект события (event)
+   */
   var onRemovingPress = function (evt) {
     if (evt.keyCode === window.card.ESC_CODE || evt.type === 'click') {
       var currentMessage = main.querySelectorAll(':scope > div');
@@ -171,6 +189,9 @@
     }
   };
 
+  /**
+   * Показывает сообщение ошибки, если отправка данных на сервер не удалась
+   */
   var onErrorUpload = function () {
     var templateError = document.querySelector('#error').content;
     var errorMessage = templateError.cloneNode(true);
@@ -181,24 +202,33 @@
     document.addEventListener('click', onRemovingPress);
   };
 
+  /**
+   * Отменяет действия формы по умолчанию и отправляет её данные на сервер с помощью XHR
+   * @param {Object} evt Стандартый объект события (event)
+   */
   var onSubmitForm = function (evt) {
     evt.preventDefault();
     var formData = new FormData(adForm);
     window.load.load(onSuccessUpload, onErrorUpload, formData);
   };
 
-  [roomNumber, houseCapacity].forEach(function (select) {
-    select.addEventListener('change', onRoomOrCapacityChange);
-  });
-  adForm.addEventListener('submit', onSubmitForm);
-  houseType.addEventListener('change', onHouseTypeChange);
-  timeOut.addEventListener('change', onTimeChange);
-  timeIn.addEventListener('change', onTimeChange);
-  resetButton.addEventListener('click', onResetClick);
   window.form = {
     'findPinCoordinates': findPinCoordinates,
     'toggleActiveMode': toggleActiveMode,
-    'adFormFields': adFormFields
+    'adFormFields': adFormFields,
+    'roomNumber': roomNumber,
+    'houseCapacity': houseCapacity,
+    'houseType': houseType,
+    'timeOut': timeOut,
+    'timeIn': timeIn,
+    'adForm': adForm,
+    'resetButton': resetButton,
+    'onRoomOrCapacityChange': onRoomOrCapacityChange,
+    'onHouseTypeChange': onHouseTypeChange,
+    'onTimeChange': onTimeChange,
+    'onSubmitForm': onSubmitForm,
+    'onResetClick': onResetClick,
+    'onRemovingPress': onRemovingPress
   };
   setup();
 })();

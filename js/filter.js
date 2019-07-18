@@ -127,12 +127,9 @@
     window.card.deleteCurrentCard();
   };
 
-  for (var i = 0; i < allFilters.length; i++) {
-    allFilters[i].addEventListener('change', onFilterValueChange);
-  }
-
   window.filter = {
     'allFilters': allFilters,
-    'cleanMap': cleanMap
+    'cleanMap': cleanMap,
+    'onFilterValueChange': onFilterValueChange
   };
 })();

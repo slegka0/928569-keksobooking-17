@@ -4,6 +4,7 @@
   var ESC_CODE = 27;
   var IMG_WIDTH = 45;
   var IMG_HEIGHT = 40;
+
   /**
    * Создает карточку объявления и возвращает её
    * @param {Object} ad Объект с данными, которые будут записаны на карточке
@@ -65,6 +66,8 @@
     var fragment = document.createDocumentFragment();
     fragment.appendChild(generateCard(ad));
     window.pin.map.appendChild(fragment);
+    document.addEventListener('keydown', onEscPress);
+    document.addEventListener('click', onCloseButtonClick);
   };
 
   /**
@@ -100,6 +103,8 @@
     if (currentCard) {
       window.pin.map.removeChild(currentCard);
     }
+    document.removeEventListener('keydown', onEscPress);
+    document.removeEventListener('click', onCloseButtonClick);
   };
 
   /**
@@ -112,8 +117,6 @@
     renderCard(evt.target.fullData);
   };
 
-  document.addEventListener('keydown', onEscPress);
-  document.addEventListener('click', onCloseButtonClick);
   window.card = {
     'generateCard': generateCard,
     'renderCard': renderCard,

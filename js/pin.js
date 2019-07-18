@@ -31,6 +31,17 @@
       mapFilter.classList.remove('map__filters--disabled');
       window.form.toggleActiveMode(window.form.adFormFields, false);
       window.load.load(onSuccessLoad, onErrorLoad);
+      for (var i = 0; i < window.filter.allFilters.length; i++) {
+        window.filter.allFilters[i].addEventListener('change', window.filter.onFilterValueChange);
+      }
+      [window.form.roomNumber, window.form.houseCapacity].forEach(function (select) {
+        select.addEventListener('change', window.form.onRoomOrCapacityChange);
+      });
+      window.form.houseType.addEventListener('change', window.form.onHouseTypeChange);
+      window.form.timeOut.addEventListener('change', window.form.onTimeChange);
+      window.form.timeIn.addEventListener('change', window.form.onTimeChange);
+      window.form.adForm.addEventListener('submit', window.form.onSubmitForm);
+      window.form.resetButton.addEventListener('click', window.form.onResetClick);
     } else {
       window.form.findPinCoordinates('shapeless');
     }
@@ -160,6 +171,8 @@
     var errorDescription = errorBlock.querySelector('.error__message');
     errorDescription.textContent = 'Ошибка получения данных ;(';
     mainBlock.appendChild(errorBlock);
+    document.addEventListener('keydown', window.form.onRemovingPress);
+    document.addEventListener('click', window.form.onRemovingPress);
   };
 
   /**

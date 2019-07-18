@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
+  var URL_LOAD = 'https://js.dump.academy/keksobooking/datas';
   var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
   var SUCCESS_LOAD_CODE = 200;
 
@@ -18,14 +18,8 @@
       if (xhr.status === SUCCESS_LOAD_CODE) {
         onSuccess(xhr.response);
       } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+        onError();
       }
-    });
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
     if (data) {
