@@ -30,7 +30,6 @@
       adForm.classList.remove('ad-form--disabled');
       mapFilter.classList.remove('map__filters--disabled');
       window.form.toggleActiveMode(window.form.adFormFields, false);
-      window.form.toggleActiveMode(window.filter.allFilters, false);
       window.load.load(onSuccessLoad, onErrorLoad);
     } else {
       window.form.findPinCoordinates('shapeless');
@@ -168,6 +167,7 @@
    * @param {[]} offers Массив с данными для отрисовки
    */
   var onSuccessLoad = function (offers) {
+    window.form.toggleActiveMode(window.filter.allFilters, false);
     window.pins = offers;
     var miniOffers = offers.slice(0, MAX_PIN);
     renderPins(miniOffers);

@@ -16,6 +16,7 @@
   var adFormTextareas = Array.from(adForm.querySelectorAll('textarea'));
   var adFormLabels = Array.from(adForm.querySelectorAll('label'));
   var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas, adFormLabels);
+  var main = document.querySelector('main');
   var minPrices = {
     bungalo: 0,
     flat: 1000,
@@ -148,9 +149,48 @@
     deactivatePage();
   };
 
+  var onSuccessUpload = function () {
+    deactivatePage();
+    var templateSuccess = document.querySelector('#success').content;
+    var successMessage = templateSuccess.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(successMessage);
+    main.appendChild(fragment);
+    document.addEventListener('keydown', onRemovingPress);
+    document.addEventListener('click', onRemovingPress);
+  };
+
+  var onRemovingPress = function (evt) {
+    if (evt.keyCode === window.card.ESC_CODE || evt.type === 'click') {
+      var currentMessage = main.querySelectorAll(':scope > div');
+      if (currentMessage) {
+        main.removeChild(currentMessage[currentMessage.length - 1]);
+      }
+      document.removeEventListener('keydown', onRemovingPress);
+      document.removeEventListener('click', onRemovingPress);
+    }
+  };
+
+  var onErrorUpload = function () {
+    var templateError = document.querySelector('#error').content;
+    var errorMessage = templateError.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(errorMessage);
+    main.appendChild(fragment);
+    document.addEventListener('keydown', onRemovingPress);
+    document.addEventListener('click', onRemovingPress);
+  };
+
+  var onSubmitForm = function (evt) {
+    evt.preventDefault();
+    var formData = new FormData(adForm);
+    window.load.load(onSuccessUpload, onErrorUpload, formData);
+  };
+
   [roomNumber, houseCapacity].forEach(function (select) {
     select.addEventListener('change', onRoomOrCapacityChange);
   });
+  adForm.addEventListener('submit', onSubmitForm);
   houseType.addEventListener('change', onHouseTypeChange);
   timeOut.addEventListener('change', onTimeChange);
   timeIn.addEventListener('change', onTimeChange);

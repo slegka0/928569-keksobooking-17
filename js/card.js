@@ -118,6 +118,7 @@
     'generateCard': generateCard,
     'renderCard': renderCard,
     'deleteCurrentCard': deleteCurrentCard,
-    'onPinClick': onPinClick
+    'onPinClick': onPinClick,
+    'ESC_CODE': ESC_CODE
   };
 })();
