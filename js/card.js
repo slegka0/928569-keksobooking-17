@@ -34,7 +34,11 @@
     cardAddress.textContent = ad.offer.address;
     cardPrice.textContent = ad.offer.price + '₽/ночь';
     cardType.textContent = typeDict[ad.offer.type];
-    cardCapacity.textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+    if (ad.offer.guests !== 0) {
+      cardCapacity.textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+    } else {
+      cardCapacity.textContent = ad.offer.rooms + ' комнат не для гостей';
+    }
     cardTime.textContent = 'Заезд после ' + ad.offer.checkin + ' выезд до ' + ad.offer.checkout;
     cardDescription.textContent = ad.offer.description;
     cardAvatar.src = ad.author.avatar;

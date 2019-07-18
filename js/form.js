@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var LEFT_CENTER = 570;
+  var TOP_CENTER = 375;
   var adForm = document.querySelector('.ad-form');
   var resetButton = adForm.querySelector('.ad-form__reset');
   var timeIn = document.querySelector('#timein');
@@ -124,8 +126,6 @@
    * Переводит страницу в неактивное состояние
    */
   var deactivatePage = function () {
-    var LEFT_CENTER = 570;
-    var TOP_CENTER = 375;
     window.firstStart = true;
     window.ifMouseMoved = false;
     window.pinMode = 'round';
@@ -170,22 +170,37 @@
     var fragment = document.createDocumentFragment();
     fragment.appendChild(successMessage);
     main.appendChild(fragment);
-    document.addEventListener('keydown', onRemovingPress);
-    document.addEventListener('click', onRemovingPress);
+    document.addEventListener('keydown', onEscPush);
+    document.addEventListener('click', onAreaClick);
   };
 
   /**
-   * Удаляет окно ошибки/успеха (отправки/получения данных) при нажатии на ESC или клику
+   * Удаляет окно сообщения
+   */
+  var removeMessage = function () {
+    var currentMessage = main.querySelectorAll(':scope > div');
+    main.removeChild(currentMessage[currentMessage.length - 1]);
+    document.removeEventListener('keydown', onEscPush);
+    document.removeEventListener('click', onAreaClick);
+  };
+
+  /**
+   * Удаляет окно ошибки/успеха (отправки/получения данных) при нажатии на ESC
    * @param {Object} evt Стандартый объект события (event)
    */
-  var onRemovingPress = function (evt) {
-    if (evt.keyCode === window.card.ESC_CODE || evt.type === 'click') {
-      var currentMessage = main.querySelectorAll(':scope > div');
-      if (currentMessage) {
-        main.removeChild(currentMessage[currentMessage.length - 1]);
-      }
-      document.removeEventListener('keydown', onRemovingPress);
-      document.removeEventListener('click', onRemovingPress);
+  var onEscPush = function (evt) {
+    if (evt.keyCode === window.card.ESC_CODE) {
+      removeMessage();
+    }
+  };
+
+  /**
+   * Удаляет окно ошибки/успеха (отправки/получения данных) при клике
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onAreaClick = function (evt) {
+    if (evt.type === 'click') {
+      removeMessage();
     }
   };
 
@@ -198,8 +213,8 @@
     var fragment = document.createDocumentFragment();
     fragment.appendChild(errorMessage);
     main.appendChild(fragment);
-    document.addEventListener('keydown', onRemovingPress);
-    document.addEventListener('click', onRemovingPress);
+    document.addEventListener('keydown', onEscPush);
+    document.addEventListener('click', onAreaClick);
   };
 
   /**
@@ -228,7 +243,9 @@
     'onTimeChange': onTimeChange,
     'onSubmitForm': onSubmitForm,
     'onResetClick': onResetClick,
-    'onRemovingPress': onRemovingPress
+    'onEscPush': onEscPush,
+    'onAreaClick': onAreaClick,
+    'deactivatePage': deactivatePage
   };
   setup();
 })();

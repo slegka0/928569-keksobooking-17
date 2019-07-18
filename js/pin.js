@@ -171,8 +171,6 @@
     var errorDescription = errorBlock.querySelector('.error__message');
     errorDescription.textContent = 'Ошибка получения данных ;(';
     mainBlock.appendChild(errorBlock);
-    document.addEventListener('keydown', window.form.onRemovingPress);
-    document.addEventListener('click', window.form.onRemovingPress);
   };
 
   /**
