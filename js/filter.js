@@ -114,19 +114,19 @@
       }
     };
 
-    if (ads) {
-      var backupData = ads;
-      var filters = [checkTypes, checkRoom, checkCapacity, checkPrice, checkFeatures];
-    }
-
-    var result = backupData.filter(function (elem) {
-      for (var i = 0; i < filters.length; i++) {
-        if (filters[i](elem) === false) {
-          return false;
-        }
+    /**
+     * Проверяет метку на соответствие значениям каждого фильтра
+     * @param {Object} elem Данные о метке
+     * @returns {boolean}
+     */
+    var filterIt = function (elem) {
+      if (checkTypes(elem) && checkRoom(elem) && checkCapacity(elem) && checkPrice(elem) && checkFeatures(elem)) {
+        return true;
       }
-      return true;
-    }).slice(0, window.pin.MAX_PIN);
+      return false;
+    };
+
+    var result = ads.filter(filterIt).slice(0, window.pin.MAX_PIN);
     lastTimeout = window.setTimeout(function () {
       window.pin.renderPins(result);
     }, debounce);
