@@ -42,6 +42,8 @@
       window.form.timeIn.addEventListener('change', window.form.onTimeChange);
       window.form.adForm.addEventListener('submit', window.form.onSubmitForm);
       window.form.resetButton.addEventListener('click', window.form.onResetClick);
+      window.form.avatarInput.addEventListener('change', window.form.onAvatarChange);
+      window.form.imagesInput.addEventListener('change', window.form.onImagesChange);
     } else {
       window.form.findPinCoordinates('shapeless');
     }
@@ -174,7 +176,7 @@
   };
 
   /**
-   * Выполняет отрисовку пяти пинов на карте, если их загрузка произошла успешно и отрисовывает карточку для первого из них
+   * Выполняет отрисовку пяти пинов на карте, если их загрузка произошла успешно
    * @param {[]} offers Массив с данными для отрисовки
    */
   var onSuccessLoad = function (offers) {

@@ -3,6 +3,7 @@
 (function () {
   var LEFT_CENTER = 570;
   var TOP_CENTER = 375;
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var adForm = document.querySelector('.ad-form');
   var resetButton = adForm.querySelector('.ad-form__reset');
   var timeIn = document.querySelector('#timein');
@@ -19,6 +20,11 @@
   var adFormLabels = Array.from(adForm.querySelectorAll('label'));
   var adFormFields = adFormInputs.concat(adFormSelects, adFormButtons, adFormTextareas, adFormLabels);
   var main = document.querySelector('main');
+  var avatarInput = document.querySelector('#avatar');
+  var avatarPreview = document.querySelector('.ad-form-header__preview img');
+  var imagesInput = document.querySelector('#images');
+  var imagesPreview = document.querySelector('.ad-form__photo');
+  var photoContainer = document.querySelector('.ad-form__photo-container');
   var minPrices = {
     bungalo: 0,
     flat: 1000,
@@ -39,6 +45,61 @@
     toggleActiveMode(adFormFields, true);
     toggleActiveMode(window.filter.allFilters, true);
     findPinCoordinates('circle');
+  };
+
+  /**
+   * Создает <img> и добавляет его в форму "Фотографии жилья"
+   * @param {string} address Значение атрибута src для картинки
+   */
+  var createImg = function (address) {
+    var image = document.createElement('img');
+    image.style.width = imagesPreview.offsetWidth + 'px';
+    image.style.height = imagesPreview.offsetHeight + 'px';
+    image.src = address;
+    if (document.querySelector('.ad-form__photo > img')) {
+      var div = imagesPreview.cloneNode(false);
+      photoContainer.appendChild(div);
+      div.appendChild(image);
+    } else {
+      imagesPreview.appendChild(image);
+    }
+  };
+
+  /**
+   * Отрисовывает загруженные фотографии жилья
+   * @param {Object} evt Стандартый объект события (event)
+   */
+  var onImagesChange = function (evt) {
+    var files = evt.target.files;
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (file.type.match('image')) {
+        var picReader = new FileReader();
+        picReader.addEventListener('load', function (loadEvt) {
+          var picFile = loadEvt.target;
+          createImg(picFile.result);
+        });
+        picReader.readAsDataURL(file);
+      }
+    }
+  };
+
+  /**
+   * Отрисовывает загруженную картинку аватара
+   */
+  var onAvatarChange = function () {
+    var file = avatarInput.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+    if (matches) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function () {
+        avatarPreview.src = reader.result;
+      });
+      reader.readAsDataURL(file);
+    }
   };
 
   /**
@@ -105,7 +166,7 @@
       result = 'Количество комнат меньше, чем количество гостей :(';
     } else {
       if (room.value === '100' || capacity.value === '0') {
-        result = '100 комнат идеально подойдут не для гостей';
+        result = 'Выберите 100 комнат не для гостей';
       }
     }
     return result;
@@ -123,6 +184,20 @@
   };
 
   /**
+   * Очищает поле формы "Фотографии жилья" от всех фотографий
+   */
+  var cleanPhotos = function () {
+    var photos = Array.from(photoContainer.querySelectorAll('.ad-form__photo'));
+    var lastPhoto = photoContainer.querySelector('.ad-form__photo > img');
+    var indexOfLastPhoto = photos.length - 1;
+    photos.reverse();
+    for (var i = 0; i < indexOfLastPhoto; i++) {
+      photoContainer.removeChild(photos[i]);
+    }
+    photos[indexOfLastPhoto].removeChild(lastPhoto);
+  };
+
+  /**
    * Переводит страницу в неактивное состояние
    */
   var deactivatePage = function () {
@@ -136,6 +211,8 @@
     window.pin.map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
     window.pin.mapFilter.classList.add('map__filters--disabled');
+    avatarPreview.src = 'img/muffin-grey.svg';
+    cleanPhotos();
     adForm.reset();
     for (var i = 0; i < window.filter.allFilters.length; i++) {
       window.filter.allFilters[i].removeEventListener('change', window.filter.onFilterValueChange);
@@ -148,6 +225,8 @@
     timeIn.removeEventListener('change', onTimeChange);
     adForm.removeEventListener('submit', onSubmitForm);
     resetButton.removeEventListener('click', onResetClick);
+    avatarInput.removeEventListener('change', onAvatarChange);
+    imagesInput.removeEventListener('change', onImagesChange);
     setup();
   };
 
@@ -245,7 +324,11 @@
     'onResetClick': onResetClick,
     'onEscPush': onEscPush,
     'onAreaClick': onAreaClick,
-    'deactivatePage': deactivatePage
+    'deactivatePage': deactivatePage,
+    'avatarInput': avatarInput,
+    'onAvatarChange': onAvatarChange,
+    'imagesInput': imagesInput,
+    'onImagesChange': onImagesChange
   };
   setup();
 })();

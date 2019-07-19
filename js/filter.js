@@ -114,15 +114,21 @@
       }
     };
 
-    var filteredAds = ads.filter(checkTypes).
-                          filter(checkRoom).
-                          filter(checkCapacity).
-                          filter(checkPrice).
-                          filter(checkFeatures).
-                          slice(0, window.pin.MAX_PIN);
+    if (ads) {
+      var backupData = ads;
+      var filters = [checkTypes, checkRoom, checkCapacity, checkPrice, checkFeatures];
+    }
 
+    var result = backupData.filter(function (elem) {
+      for (var i = 0; i < filters.length; i++) {
+        if (filters[i](elem) === false) {
+          return false;
+        }
+      }
+      return true;
+    }).slice(0, window.pin.MAX_PIN);
     lastTimeout = window.setTimeout(function () {
-      window.pin.renderPins(filteredAds);
+      window.pin.renderPins(result);
     }, debounce);
     window.card.deleteCurrentCard();
   };
