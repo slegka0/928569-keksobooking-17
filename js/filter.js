@@ -117,7 +117,7 @@
     /**
      * Проверяет метку на соответствие значениям каждого фильтра
      * @param {Object} elem Данные о метке
-     * @returns {boolean}
+     * @return {boolean}
      */
     var filterIt = function (elem) {
       return checkTypes(elem) && checkRoom(elem) && checkCapacity(elem) && checkPrice(elem) && checkFeatures(elem);
