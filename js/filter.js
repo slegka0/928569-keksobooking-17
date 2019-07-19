@@ -120,10 +120,7 @@
      * @returns {boolean}
      */
     var filterIt = function (elem) {
-      if (checkTypes(elem) && checkRoom(elem) && checkCapacity(elem) && checkPrice(elem) && checkFeatures(elem)) {
-        return true;
-      }
-      return false;
+      return checkTypes(elem) && checkRoom(elem) && checkCapacity(elem) && checkPrice(elem) && checkFeatures(elem);
     };
 
     var result = ads.filter(filterIt).slice(0, window.pin.MAX_PIN);
