@@ -70,6 +70,7 @@
    * @param {Object} evt Стандартый объект события (event)
    */
   var onImagesChange = function (evt) {
+    cleanPhotos();
     var files = evt.target.files;
     for (var i = 0; i < files.length; i++) {
       var file = files[i];
@@ -194,7 +195,9 @@
     for (var i = 0; i < indexOfLastPhoto; i++) {
       photoContainer.removeChild(photos[i]);
     }
-    photos[indexOfLastPhoto].removeChild(lastPhoto);
+    if (lastPhoto) {
+      photos[indexOfLastPhoto].removeChild(lastPhoto);
+    }
   };
 
   /**
