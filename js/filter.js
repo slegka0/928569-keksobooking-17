@@ -22,9 +22,9 @@
    */
   var cleanMap = function () {
     var pins = window.pin.pinsContainer.querySelectorAll('button[type = button]');
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].remove();
-    }
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
   };
 
   /**
@@ -100,11 +100,11 @@
      */
     var checkFeatures = function (it) {
       var checkedFeatures = [];
-      for (var i = 0; i < featuresInputs.length; i++) {
-        if (featuresInputs[i].checked) {
-          checkedFeatures.push(featuresInputs[i].value);
+      featuresInputs.forEach(function (featureInput) {
+        if (featureInput.checked) {
+          checkedFeatures.push(featureInput.value);
         }
-      }
+      });
       if (checkedFeatures.length === 0) {
         return it;
       } else {
@@ -125,6 +125,9 @@
 
     var result = ads.filter(filterIt).slice(0, window.pin.MAX_PIN);
     lastTimeout = window.setTimeout(function () {
+      window.allPins.forEach(function (pin) {
+        pin.removeEventListener('click', window.card.onPinClick);
+      });
       window.pin.renderPins(result);
     }, debounce);
     window.card.deleteCurrentCard();
@@ -133,6 +136,7 @@
   window.filter = {
     'allFilters': allFilters,
     'cleanMap': cleanMap,
-    'onFilterValueChange': onFilterValueChange
+    'onFilterValueChange': onFilterValueChange,
+    'featuresInputs': featuresInputs
   };
 })();

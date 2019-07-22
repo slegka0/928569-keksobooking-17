@@ -31,9 +31,9 @@
       mapFilter.classList.remove('map__filters--disabled');
       window.form.toggleActiveMode(window.form.adFormFields, false);
       window.load.load(onSuccessLoad, onErrorLoad);
-      for (var i = 0; i < window.filter.allFilters.length; i++) {
-        window.filter.allFilters[i].addEventListener('change', window.filter.onFilterValueChange);
-      }
+      window.filter.allFilters.forEach(function (filter) {
+        filter.addEventListener('change', window.filter.onFilterValueChange);
+      });
       [window.form.roomNumber, window.form.houseCapacity].forEach(function (select) {
         select.addEventListener('change', window.form.onRoomOrCapacityChange);
       });
@@ -153,14 +153,14 @@
    */
   var renderPins = function (offers) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < offers.length; i++) {
-      fragment.appendChild(generatePin(offers[i]));
-    }
+    offers.forEach(function (offer) {
+      fragment.appendChild(generatePin(offer));
+    });
     pinsContainer.appendChild(fragment);
     window.allPins = window.pin.pinsContainer.querySelectorAll('button[type = button]');
-    for (var j = 0; j < window.allPins.length; j++) {
-      window.allPins[j].addEventListener('click', window.card.onPinClick);
-    }
+    window.allPins.forEach(function (pin) {
+      pin.addEventListener('click', window.card.onPinClick);
+    });
   };
 
   /**

@@ -71,9 +71,8 @@
    */
   var onImagesChange = function (evt) {
     cleanPhotos();
-    var files = evt.target.files;
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i];
+    var files = Array.from(evt.target.files);
+    files.forEach(function (file) {
       if (file.type.match('image')) {
         var picReader = new FileReader();
         picReader.addEventListener('load', function (loadEvt) {
@@ -82,7 +81,7 @@
         });
         picReader.readAsDataURL(file);
       }
-    }
+    });
   };
 
   /**
@@ -124,14 +123,14 @@
    * @param {boolean} disabled Текущее состояние (активное или неактивное)
    */
   var toggleActiveMode = function (formElements, disabled) {
-    for (var i = 0; i < formElements.length; i++) {
-      formElements[i].disabled = disabled;
+    formElements.forEach(function (formElement) {
+      formElement.disabled = disabled;
       if (disabled) {
-        formElements[i].classList.add('no-active');
+        formElement.classList.add('no-active');
       } else {
-        formElements[i].classList.remove('no-active');
+        formElement.classList.remove('no-active');
       }
-    }
+    });
   };
 
   /**
@@ -217,9 +216,13 @@
     avatarPreview.src = 'img/muffin-grey.svg';
     cleanPhotos();
     adForm.reset();
-    for (var i = 0; i < window.filter.allFilters.length; i++) {
-      window.filter.allFilters[i].removeEventListener('change', window.filter.onFilterValueChange);
-    }
+    window.filter.allFilters.forEach(function (filter) {
+      filter.value = 'any';
+      filter.removeEventListener('change', window.filter.onFilterValueChange);
+    });
+    window.filter.featuresInputs.forEach(function (featureInput) {
+      featureInput.checked = false;
+    });
     [roomNumber, houseCapacity].forEach(function (select) {
       select.removeEventListener('change', onRoomOrCapacityChange);
     });
